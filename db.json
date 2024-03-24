@@ -1,0 +1,15 @@
+{
+  "users": [
+    {
+      "id": "d235",
+      "email": "macoy@gmail.com",
+      "password": "$2a$10$LaXYxQ1RZ5cIULGrR3n6eeg9.5X31r3g1NRayi6078fhmYqa3sMsW",
+      "firstName": "Macoy",
+      "lastName": "Velasco",
+      "address": "Sabang, Dasma City, Cavite",
+      "phoneNumber": "09276082570",
+      "gender": "male",
+      "birthdate": "2024-03-04"
+    }
+  ]
+}

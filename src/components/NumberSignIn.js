@@ -1,21 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Home from "./HomePage"; // Import the Home component
 import bcrypt from 'bcryptjs'; // Import bcrypt library
-import SignInFormNumber from "./NumberSignIn"; // Import the mobile number sign-in form
+import SignInForm from "./SignInForm"; // Import the email sign-in form
 import { useFormik } from "formik";
 import * as yup from "yup";
 
 const validationSchema = yup.object().shape({
-  email: yup.string()
-    .email("Invalid email format")
-    .required("Ex. sample@gmail.com"),
+  phoneNumber: yup.string()
+    .matches(/^[0-9()]+$/, "Only contain digits")
+    .min(11, "At least 11 characters")
+    .max(11, "11 characters only")
+    .required("Ex. 09000000000"),
 });
 
-const SignInForm = () => {
+const SignInFormNumber = () => {
   const [error, setError] = useState("");
   const [loggedInUser, setLoggedInUser] = useState(null); // State to store logged-in user
-  const [showEmailForm, setShowEmailForm] = useState(true); // State to track which form to show
+  const [showEmailForm, setShowEmailForm] = useState(false); // State to track which form to show
 
   const handleToggleForm = () => {
     setShowEmailForm(!showEmailForm);
@@ -25,7 +27,7 @@ const SignInForm = () => {
     try {
       const response = await axios.get("http://localhost:8000/users", {
         params: {
-          email: values.email,
+          phoneNumber: values.phoneNumber,
         },
       });
 
@@ -55,56 +57,61 @@ const SignInForm = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
+      phoneNumber: "",
       password: "",
     },
     validationSchema: validationSchema,
     onSubmit: handleSubmit,
   });
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      // Check if email field has an error
-      if (formik.errors.email) {
-        window.alert(formik.errors.email);
-      } else {
-        formik.handleSubmit(); // Trigger form submission
+  // Add event listener to the form for Enter key press
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (formik.isValid) {
+          formik.handleSubmit();
+        } else {
+          window.alert("Invalid mobile number format");
+        }
       }
-    }
-  };
+    };
+    document.addEventListener("keypress", handleKeyPress);
+    return () => {
+      document.removeEventListener("keypress", handleKeyPress);
+    };
+  }, [formik.isValid, formik.handleSubmit]);
 
   return (
     <div>
       {showEmailForm ? (
+        <SignInForm /> // Render email sign-in form if showEmailForm is true
+      ) : (
         <div>
           {loggedInUser ? (
             <Home user={loggedInUser} /> // Render Home component if user is logged in
           ) : (
             <form onSubmit={formik.handleSubmit}>
               <div>
-                <label className="block text-gray-700 text-base" htmlFor="email">
-                  Email
+                <label className="block text-gray-700 text-base" htmlFor="phoneNumber">
+                  Mobile Number
                 </label>
                 <input
-                  className={`mt-1 p-2 rounded-md border text-sm focus:border-indigo-500 focus:outline-none text-black ${
-                    formik.touched.email && formik.errors.email ? "border-red-500" : "border-gray-300"
-                  }`}
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formik.values.email}
+                  className={`mt-1 p-2 rounded-md border text-sm focus:border-indigo-500 focus:outline-none text-black ${formik.errors.phoneNumber ? "border-red-500" : "border-gray-300"}`}
+                  type="text"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={formik.values.phoneNumber}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  onKeyDown={handleKeyPress} // Listen for key press event
-                  placeholder="Enter your email"
+                  placeholder="Enter your mobile number"
                   required
                 />
-                {formik.touched.email && formik.errors.email ? (
-                  <div className="text-red-500 text-xs mt-1">{formik.errors.email}</div>
+                {formik.touched.phoneNumber && formik.errors.phoneNumber ? (
+                  <div className="text-red-500 text-xs mt-1">{formik.errors.phoneNumber}</div>
                 ) : null}
               </div>
-              <button className="text-green-500 text-xs" onClick={handleToggleForm}>Use Mobile Number</button>
+              <button className="text-green-500 text-xs" onClick={handleToggleForm}>Use Email</button>
               <div>
                 <label
                   className="block text-gray-700 text-base mt-1"
@@ -119,7 +126,6 @@ const SignInForm = () => {
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  onKeyDown={handleKeyPress} // Listen for key press event
                   placeholder="Enter your password"
                   className={`mt-1 p-2 rounded-md border text-sm focus:border-indigo-500 focus:outline-none text-black`}
                   required
@@ -138,11 +144,9 @@ const SignInForm = () => {
             </form>
           )}
         </div>
-      ) : (
-        <SignInFormNumber />
       )}
     </div>
   );
 };
 
-export default SignInForm;
+export default SignInFormNumber;

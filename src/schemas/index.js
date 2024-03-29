@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 const passwordRules = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
-const validGenders = ["male", "female", "others"];
+
 export const basicSchema = yup.object().shape({
   email: yup.string().email("Please Enter a valid email").required("Required"),
 
@@ -24,7 +24,6 @@ export const basicSchema = yup.object().shape({
   .required("Phone number is required"),
 
   gender: yup.string()
-    .oneOf(validGenders, {message: "Invalid gender option"})
     .required("Required"), 
 
     birthdate: yup.date()

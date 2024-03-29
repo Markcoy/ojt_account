@@ -237,22 +237,23 @@ const SignUpForm = () => {
       Gender
     </label>
     <select
-      className={`w-full border-2 border-gray-300 round-xl p-2 mt-1 bg-transparent text-black ${
-        errors.gender && touched.gender ? "border-red-500" : "border-gray-300"
-      } focus:border-indigo-500 focus:outline-none text-black`}
-      id="gender"
-      type="gender"
-      value={values.gender}
-      onChange={handleChange}
-      onBlur={handleBlur}
-    >
-      <option value="Select Gender">Select Gender</option>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-      <option value="others">Others</option>
-    </select>
+  className={`w-full border-2 text-sm border-gray-300 round-xl p-2 mt-1 bg-transparent text-black ${
+    errors.gender && touched.gender ? "border-red-500" : "border-gray-300"
+  } focus:border-indigo-500 focus:outline-none text-black`}
+  id="gender"
+  type="gender"
+  value={values.gender}
+  onChange={handleChange}
+  onBlur={handleBlur}
+>
+  <option value="">Select Gender</option>
+  <option value="Male">Male</option>
+  <option value="Female">Female</option>
+  <option value="Others">Others</option>
+</select>
+
     {errors.gender && touched.gender && (
-      <p className="text-xs text-red-500">{errors.password}</p>
+      <p className="text-xs text-red-500">{errors.gender}</p>
     )}
   </div>
 

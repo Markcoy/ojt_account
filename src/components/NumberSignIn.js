@@ -51,7 +51,7 @@ const SignInFormNumber = () => {
       }
     } catch (error) {
       console.error("Error logging in:", error);
-      setError("Error logging in. Please try again.");
+      window.alert("Error logging in. Please try again.");
     }
   };
 
